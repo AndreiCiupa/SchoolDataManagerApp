@@ -1,6 +1,6 @@
-﻿namespace SchoolData
+﻿namespace SchoolData.Models
 {
-    enum Rank
+    public enum Rank
     {
         Professor,
         AssociateProfessor,
