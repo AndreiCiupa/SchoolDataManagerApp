@@ -2,7 +2,6 @@
 using SchoolData.Models;
 using SchoolData;
 using SchoolDataManagerApp.Dtos;
-using Microsoft.EntityFrameworkCore;
 using SchoolDataManagerApp.Extensions;
 
 namespace SchoolDataManagerApp.Controllers
