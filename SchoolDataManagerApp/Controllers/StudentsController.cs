@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolData;
-using SchoolData.Models;
+using SchoolDataManagerApp.Dtos;
+using SchoolManagerApp.Extensions;
 
 namespace SchoolDataManagerApp.Controllers
 {
@@ -10,20 +11,24 @@ namespace SchoolDataManagerApp.Controllers
     {
         // Get All Students
         [HttpGet("get-all-students")]
-        public List<Student> GetAllStudents()
+        public List<StudentToGet> GetAllStudents()
         {
             using var ctx = new SchoolDataDbContext();
 
-            return ctx.Students.ToList();
+            return ctx.Students.
+                Select(s => s.ToDto()).
+                ToList();
         }
 
         // Get Student
         [HttpGet("{studentId}/get-student")]
-        public Student GetStudent(int studentId) 
+        public StudentToGet GetStudent(int studentId) 
         {
             using var ctx = new SchoolDataDbContext();
 
-            return ctx.Students.FirstOrDefault(s => s.Id == studentId);
+            return ctx.Students.
+                FirstOrDefault(s => s.Id == studentId).
+                ToDto();
         }
 
         // Create Student
@@ -31,23 +36,23 @@ namespace SchoolDataManagerApp.Controllers
         // Add subject
         // !!!!!!
         [HttpPost("add-student")]
-        public void AddStudent([FromBody] Student student)
+        public void AddStudent([FromBody] StudentToCreate student)
         {
             using var ctx = new SchoolDataDbContext();
 
-            ctx.Students.Add(student);
+            ctx.Students.Add(student.ToEntity());
             ctx.SaveChanges();
         }
 
         // Change Student Data
         [HttpPost("{studentId}/change-student-data")]
-        public void ChangeStudentData(int studentId, [FromBody] Student newStudent)
+        public void ChangeStudentData(int studentId, [FromBody] StudentToCreate newStudent)
         {
             using var ctx = new SchoolDataDbContext();
 
             var student = ctx.Students.FirstOrDefault(s => s.Id == studentId);
 
-            student = newStudent;
+            student = newStudent.ToEntity();
             ctx.SaveChanges();
         }
     }
