@@ -10,22 +10,44 @@ namespace SchoolDataManagerApp.Controllers
     [ApiController]
     public class TeachersController : ControllerBase
     {
-        // Deletes Subject
-        // also deletes teacher
+        /// <summary>
+        /// Deletes a subject and its teacher if any
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
         [HttpDelete("{subjectId}/delete-subject")]
-        public void DeleteSubject(int subjectId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public IActionResult DeleteSubject(int subjectId)
         {
             using var ctx = new SchoolDataDbContext();
 
-            ctx.Remove(ctx.Teachers.FirstOrDefault(t => t.SubjectId == subjectId));
+            if (subjectId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
+
+            var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
+
+            if(subject.Teacher != null)
+            {
+                ctx.Remove(ctx.Teachers.FirstOrDefault(t => t.SubjectId == subjectId));
+            }
+
             ctx.Remove(ctx.Subjects.FirstOrDefault(s => s.Id == subjectId));
 
             ctx.SaveChanges();
+            return Ok("Student deleted successfully.");
         }
 
-        // Add Teacher
+        /// <summary>
+        /// Creates a new teacher
+        /// </summary>
+        /// <param name="teacher"></param>
+        /// <returns></returns>
         [HttpPost("add-teacher")]
-        public void AddTeacher([FromBody] TeacherToCreate teacher)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(string))]
+        public IActionResult AddTeacher([FromBody] TeacherToCreate teacher)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -37,25 +59,50 @@ namespace SchoolDataManagerApp.Controllers
                 SubjectId = teacher.SubjectId
             });
             ctx.SaveChanges();
+
+            return Created("Teacher added successfully", true);
         }
 
-        // Delete Teacher
-        // Subject remains as it could function as a job opening
+        /// <summary>
+        /// Deletes a teacher by Id
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <returns></returns>
         [HttpDelete("{teacherId}/delete-teacher")]
-        public void DeleteTeacher(int teacherId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public IActionResult DeleteTeacher(int teacherId)
         {
             using var ctx = new SchoolDataDbContext();
+
+            if (teacherId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
 
             ctx.Remove(ctx.Teachers.FirstOrDefault(t => t.SubjectId == teacherId));
 
             ctx.SaveChanges();
+            return Ok("Student deleted successfully.");
         }
 
-        // Change Teacher Data
+        /// <summary>
+        /// Updates teacher info
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="newTeacher"></param>
+        /// <returns></returns>
         [HttpPost("{teacherId}/change-teacher-data")]
-        public void ChangeTeacherData(int teacherId, [FromBody] TeacherToUpdate newTeacher)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public IActionResult ChangeTeacherData(int teacherId, [FromBody] TeacherToUpdate newTeacher)
         {
             using var ctx = new SchoolDataDbContext();
+
+            if (teacherId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
 
             var teacher = ctx.Teachers.FirstOrDefault(t => t.Id == teacherId);
             if(teacher != null)
@@ -65,27 +112,35 @@ namespace SchoolDataManagerApp.Controllers
             }
             
             ctx.SaveChanges();
+
+            return Created("Teacher info changed successfully", true);
         }
 
-        // Add A Subject to a Teacher
+        /// <summary>
+        /// Assign a Subject to a Teacher
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="subjectId"></param>
         [HttpPost("{teacherId}/{subjectId}/add-subject-to-teacher")]
-        public void AddSubjectToTeacher(int teacherId, int subjectId)
+        public void AssignSubjectToTeacher(int teacherId, int subjectId)
         {
             using var ctx = new SchoolDataDbContext();
 
             var teacher = ctx.Teachers.FirstOrDefault(t => t.Id == teacherId);
             var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
             
-            if(subject.Teacher == null && teacher.Subject == null)
+            if(subject.Teacher == null)
             {
-                teacher.Subject = subject;
                 subject.Teacher = teacher;
             }
             
             ctx.SaveChanges();
         }
 
-        // Promote Teacher
+        /// <summary>
+        /// Promotes a teacher
+        /// </summary>
+        /// <param name="teacherId"></param>
         [HttpPost("{teacherId}/promote-teacher")]
         public void PromoteTeacher(int teacherId)
         {
@@ -113,16 +168,27 @@ namespace SchoolDataManagerApp.Controllers
             ctx.SaveChanges();
         }
 
-        // Get All Marks given by a specific Teacher
+        /// <summary>
+        /// Returns a list of all marks given by a teacher
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <returns></returns>
         [HttpGet("{teacherId}/marks-given-by-teacher")]
-        public List<MarkToGet> GetAllMarks(int teacherId)
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkToGet>))]
+        public IActionResult GetAllMarks(int teacherId)
         {
             using var ctx = new SchoolDataDbContext();
 
-            return ctx.Marks.
+            if (teacherId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
+
+            return Ok(ctx.Marks.
                 Where(m => m.Subject.Teacher.Id == teacherId).
                 Select(m => m.ToDto()).
-                ToList();
+                ToList());
         }
     }
 }
