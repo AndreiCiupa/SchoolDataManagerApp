@@ -1,3 +1,6 @@
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(o => AddSwaggerDocumentation(o));
 
 var app = builder.Build();
 
@@ -23,3 +27,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static void AddSwaggerDocumentation(SwaggerGenOptions o)
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+}

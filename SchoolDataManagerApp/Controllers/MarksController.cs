@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SchoolData;
 using SchoolData.Models;
 using SchoolDataManagerApp.Dtos;
 using SchoolDataManagerApp.Extensions;
+using SchoolManagerApp.Extensions;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SchoolDataManagerApp.Controllers
 {
@@ -75,21 +79,64 @@ namespace SchoolDataManagerApp.Controllers
 
         }
 
-        // Get List of Students by Avg of Marks
-
-
-        // Delete a Student
-        // What does that imply? 
-        // Deleting all the marks given to that student
-        [HttpDelete("{studentId}/delete-student")]
-        public void DeleteStudent(int studentId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("student-statistics")]
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<StudentStatistics>))]
+        public IActionResult GetStudentsStatistics()
         {
             using var ctx = new SchoolDataDbContext();
 
-            ctx.Remove(ctx.Marks.Where(m => m.StudentId == studentId).ToList());
+            var students = ctx.Students.
+                Include(s => s.Marks).
+                ToList();
+
+            return Ok(
+                students.Select(s => 
+                {
+                    return new StudentStatistics
+                    {
+                        Id = s.Id,
+                        Name = s.FirstName + " " + s.LastName,
+                        Age = s.Age,
+                        Average = s.Marks.Average(n => n.Value)
+                    };
+                } ).ToList()
+                );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        [HttpDelete("{studentId}/delete-student")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public IActionResult DeleteStudent(int studentId)
+        {
+            using var ctx = new SchoolDataDbContext();
+
+            if(studentId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
+
+            var student = ctx.Students.FirstOrDefault(s => s.Id == studentId);
+
+            if (!student.Marks.IsNullOrEmpty())
+            {
+                ctx.Remove(ctx.Marks.Where(m => m.StudentId == studentId).ToList());
+            }
+
+            //ctx.Remove(ctx.Marks.Where(m => m.StudentId == studentId).ToList());
             ctx.Remove(ctx.Students.FirstOrDefault(s => s.Id == studentId));
 
             ctx.SaveChanges();
+
+            return Ok("Student deleted successfully.");
         }
     }
 }

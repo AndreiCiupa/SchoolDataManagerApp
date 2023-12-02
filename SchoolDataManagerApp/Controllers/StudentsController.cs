@@ -31,17 +31,21 @@ namespace SchoolDataManagerApp.Controllers
                 ToDto();
         }
 
-        // Create Student
-        // !!!!!!
-        // Add subject
-        // !!!!!!
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="student"></param>
+        /// <returns></returns>
         [HttpPost("add-student")]
-        public void AddStudent([FromBody] StudentToCreate student)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        public IActionResult AddStudent([FromBody] StudentToCreate student)
         {
             using var ctx = new SchoolDataDbContext();
 
             ctx.Students.Add(student.ToEntity());
             ctx.SaveChanges();
+
+            return Ok("Student added successfully.");
         }
 
         // Change Student Data
