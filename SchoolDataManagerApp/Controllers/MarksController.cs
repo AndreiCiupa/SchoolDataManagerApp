@@ -80,7 +80,7 @@ namespace SchoolDataManagerApp.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Returns a list of all students and their average of all of their marks
         /// </summary>
         /// <returns></returns>
         [HttpGet("student-statistics")]
@@ -108,7 +108,7 @@ namespace SchoolDataManagerApp.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Deletes a student and all of their marks
         /// </summary>
         /// <param name="studentId"></param>
         /// <returns></returns>
@@ -131,7 +131,6 @@ namespace SchoolDataManagerApp.Controllers
                 ctx.Remove(ctx.Marks.Where(m => m.StudentId == studentId).ToList());
             }
 
-            //ctx.Remove(ctx.Marks.Where(m => m.StudentId == studentId).ToList());
             ctx.Remove(ctx.Students.FirstOrDefault(s => s.Id == studentId));
 
             ctx.SaveChanges();
