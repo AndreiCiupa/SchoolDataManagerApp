@@ -6,7 +6,6 @@ using SchoolData.Models;
 using SchoolDataManagerApp.Dtos;
 using SchoolDataManagerApp.Extensions;
 using SchoolManagerApp.Extensions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace SchoolDataManagerApp.Controllers
 {
@@ -14,9 +13,14 @@ namespace SchoolDataManagerApp.Controllers
     [ApiController]
     public class MarksController : ControllerBase
     {
-        // Add Subject
+        /// <summary>
+        /// Creates a new subject
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <returns></returns>
         [HttpPost("add-subject")]
-        public void AddSubject([FromBody] SubjectToCreate subject)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(string))]
+        public IActionResult AddSubject([FromBody] SubjectToCreate subject)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -25,11 +29,36 @@ namespace SchoolDataManagerApp.Controllers
                 Name = subject.Name
             });
             ctx.SaveChanges();
+
+            return Created("Subject created successfully", true);
         }
 
-        // Add Mark to Student
+        /// <summary>
+        /// Enroll a student to a subject
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="subjectId"></param>
+        [HttpPost("{studentId}/{subjectId}/enroll-student")]
+        public void EnrollStudent(int studentId, int subjectId)
+        {
+            using var ctx = new SchoolDataDbContext();
+
+            var student = ctx.Students.FirstOrDefault(s => s.Id == studentId);
+            var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
+
+            student.Subjects.Add(subject);
+
+            ctx.SaveChanges();
+        }
+
+        /// <summary>
+        /// Assign a mark
+        /// </summary>
+        /// <param name="mark"></param>
+        /// <returns></returns>
         [HttpPost("add-mark")]
-        public void AddMark([FromBody] MarkToCreate mark)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(string))]
+        public IActionResult AddMark([FromBody] MarkToCreate mark)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -41,43 +70,68 @@ namespace SchoolDataManagerApp.Controllers
                 SubjectId = mark.SubjectId
             });
             ctx.SaveChanges();
+
+            return Created("Mark assigned successfully", true);
         }
 
-        // Get All Marks by a Student
+        /// <summary>
+        /// Returns a list of marks given to a student
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
         [HttpGet("{studentId}/get-marks-by-student")]
-        public List<MarkToGet> GetAllMarksByStudent(int studentId)
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkToGet>))]
+        public IActionResult GetAllMarksByStudent(int studentId)
         {
             using var ctx = new SchoolDataDbContext();
+
+            if (studentId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
 
             var marks = ctx.Marks.
                 Where(m => m.StudentId == studentId).
                 Select(m => m.ToDto()).
                 ToList();
-            return marks;
+            return Ok(marks);
         }
 
-        // Get All Marks by a Student to a giving Subject
+        /// <summary>
+        /// Returns a list of all marks given to a student by subject
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
         [HttpGet("{studentId}/{subjectId}/get-marks-by-student-and-subject")]
-        public List<MarkToGet> GetAllMarksByStudentBySubject(int studentId, int subjectId)
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkToGet>))]
+        public IActionResult GetAllMarksByStudentBySubject(int studentId, int subjectId)
         {
             using var ctx = new SchoolDataDbContext();
+
+            if (studentId == 0)
+            {
+                return BadRequest("Invalid id.");
+            }
 
             var marks = ctx.Marks.
                 Where(m => m.StudentId == studentId 
                         && m.SubjectId == subjectId).
                 Select(m => m.ToDto()).
                 ToList();
-            return marks;
+            return Ok(marks);
         }
 
         // Get Avg by Subject to giving Student
-        [HttpGet("{studentId}/get-average-of-marks")]
-        public void GetAvgOfMarks(int studentId)
-        {
-            using var ctx = new SchoolDataDbContext();
+        //[HttpGet("{studentId}/get-average-of-marks")]
+        //public void GetAvgOfMarks(int studentId)
+        //{
+        //    using var ctx = new SchoolDataDbContext();
 
 
-        }
+        //}
 
         /// <summary>
         /// Returns a list of all students and their average of all of their marks

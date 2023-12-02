@@ -2,6 +2,9 @@
 
 namespace SchoolDataManagerApp.Dtos
 {
+    /// <summary>
+    /// Mark data used for creation
+    /// </summary>
     public class MarkToCreate
     {
         [Required]

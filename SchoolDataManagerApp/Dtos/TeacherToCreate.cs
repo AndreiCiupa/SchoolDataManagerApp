@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SchoolDataManagerApp.Dtos
 {
+    /// <summary>
+    /// Teacher data used for creation
+    /// </summary>
     public class TeacherToCreate
     {
         [Required]

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SchoolDataManagerApp.Dtos
+﻿namespace SchoolDataManagerApp.Dtos
 {
+    /// <summary>
+    /// Student data used for viewing
+    /// </summary>
     public class StudentToGet
     {
         public int Id { get; set; }

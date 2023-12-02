@@ -2,6 +2,9 @@
 
 namespace SchoolDataManagerApp.Dtos
 {
+    /// <summary>
+    /// Student data used for creation
+    /// </summary>
     public class StudentToCreate
     {
         [Required]

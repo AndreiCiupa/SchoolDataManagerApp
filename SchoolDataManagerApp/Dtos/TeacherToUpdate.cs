@@ -2,6 +2,9 @@
 
 namespace SchoolDataManagerApp.Dtos
 {
+    /// <summary>
+    /// Teacher data used for updating
+    /// </summary>
     public class TeacherToUpdate
     {
         [Required]

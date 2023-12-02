@@ -8,6 +8,9 @@ namespace SchoolDataManagerApp.Controllers
     [ApiController]
     public class SeedDbController : ControllerBase
     {
+        /// <summary>
+        /// Seed the database when needed
+        /// </summary>
         [HttpPost("seed-database")]
         public void SeedDb()
         {
