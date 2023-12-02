@@ -59,8 +59,7 @@ namespace SchoolDataManagerApp.Controllers
 
             ctx.Students.Add(student.ToEntity());
             ctx.SaveChanges();
-
-            return Created("Student added successfully", true);
+            return Ok("Student added successfully");
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace SchoolDataManagerApp.Controllers
             student = newStudent.ToEntity();
             ctx.SaveChanges();
 
-            return Created("Student info changed successfully", true);
+            return Ok("Student info changed successfully");
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SchoolDataManagerApp.Controllers
             });
             ctx.SaveChanges();
 
-            return Created("Subject created successfully", true);
+            return Ok("Subject created successfully");
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace SchoolDataManagerApp.Controllers
             });
             ctx.SaveChanges();
 
-            return Created("Mark assigned successfully", true);
+            return Ok("Mark assigned successfully");
         }
 
         /// <summary>

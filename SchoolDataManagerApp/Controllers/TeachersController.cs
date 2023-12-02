@@ -60,7 +60,7 @@ namespace SchoolDataManagerApp.Controllers
             });
             ctx.SaveChanges();
 
-            return Created("Teacher created successfully", true);
+            return Ok("Teacher created successfully");
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace SchoolDataManagerApp.Controllers
             
             ctx.SaveChanges();
 
-            return Created("Teacher info changed successfully", true);
+            return Ok("Teacher info changed successfully");
         }
 
         /// <summary>
