@@ -122,7 +122,8 @@ namespace SchoolDataManagerApp.Controllers
         /// <param name="teacherId"></param>
         /// <param name="subjectId"></param>
         [HttpPost("{teacherId}/{subjectId}/add-subject-to-teacher")]
-        public void AssignSubjectToTeacher(int teacherId, int subjectId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult AssignSubjectToTeacher(int teacherId, int subjectId)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -135,6 +136,7 @@ namespace SchoolDataManagerApp.Controllers
             }
             
             ctx.SaveChanges();
+            return Ok();
         }
 
         /// <summary>
@@ -142,7 +144,8 @@ namespace SchoolDataManagerApp.Controllers
         /// </summary>
         /// <param name="teacherId"></param>
         [HttpPost("{teacherId}/promote-teacher")]
-        public void PromoteTeacher(int teacherId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult PromoteTeacher(int teacherId)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -166,6 +169,7 @@ namespace SchoolDataManagerApp.Controllers
             }
 
             ctx.SaveChanges();
+            return Ok();
         }
 
         /// <summary>

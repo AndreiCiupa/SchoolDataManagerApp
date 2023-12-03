@@ -39,7 +39,8 @@ namespace SchoolDataManagerApp.Controllers
         /// <param name="studentId"></param>
         /// <param name="subjectId"></param>
         [HttpPost("{studentId}/{subjectId}/enroll-student")]
-        public void EnrollStudent(int studentId, int subjectId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult EnrollStudent(int studentId, int subjectId)
         {
             using var ctx = new SchoolDataDbContext();
 
@@ -49,6 +50,7 @@ namespace SchoolDataManagerApp.Controllers
             student.Subjects.Add(subject);
 
             ctx.SaveChanges();
+            return Ok();
         }
 
         /// <summary>
