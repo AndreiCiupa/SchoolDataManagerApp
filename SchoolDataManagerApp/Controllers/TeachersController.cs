@@ -151,7 +151,7 @@ namespace SchoolDataManagerApp.Controllers
 
             var teacher = ctx.Teachers.FirstOrDefault(t => t.Id == teacherId);
 
-            if (teacher.Id != null)
+            if (teacher.Id != 0)
             {
                 switch (teacher.Rank)
                 {
